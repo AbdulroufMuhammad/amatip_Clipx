@@ -18,7 +18,7 @@ It supports **video downloads, automatic & custom clipping, transcription, summa
 
 ### **1️⃣ Clone the Repository**
 ```sh
-git clone https://github.com/yourusername/video-processing-api.git
+git clone https://github.com/AbdulroufMuhammad/amatip_Clipx.git
 cd video-processing-api
 ```
 
