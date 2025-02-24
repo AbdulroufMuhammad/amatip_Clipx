@@ -1,5 +1,6 @@
-from django.db import models
+from mongoengine import Document, fields
 import uuid
+
 
 class Video(models.Model):
     video_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
