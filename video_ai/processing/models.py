@@ -1,5 +1,6 @@
 from mongoengine import Document, fields
 import uuid
+from django.db import models
 
 
 class Video(models.Model):
