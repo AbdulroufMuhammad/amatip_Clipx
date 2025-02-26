@@ -11,18 +11,17 @@
             background-color: #ffffff;
             font-family: Arial, sans-serif;
             transition: background-color 0.3s ease;
-
-            background-image: url('/static/img/bgm.jpg'); /* Path to your image */
-            background-size: cover; /* Ensure the image covers the entire page */
-            background-position: center; /* Position the image in the center */
-            background-attachment: fixed; /* Makes the background fixed when scrolling */
-            background-repeat: no-repeat; /* Prevent repeating the background image */
+            background-image: url('{% static "img/bgm.jpg" %}'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
         }
 
-        /* Custom styles for the hero section */
         .hero-section {
             text-align: center;
             padding: 60px 20px;
+            animation: fadeIn 1.5s ease-in-out;
         }
 
         .hero-title {
@@ -35,6 +34,12 @@
             color: #007bff;
         }
 
+        .hero-subtext {
+            font-size: 1.4rem;
+            color: #666;
+            margin-top: 15px;
+        }
+
         .video-container {
             width: 100%;
             max-width: 600px;
@@ -43,28 +48,25 @@
             border-radius: 10px;
             background-color: #f9f9f9;
             box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .btn-success, .btn-summarize {
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
         .btn-summarize {
             background-color: #007bff;
             color: #ffffff;
             font-weight: bold;
+            border-radius: 5px;
             padding: 12px 30px;
             margin-left: 10px;
         }
 
-        .btn-success {
-            background-color: #28a745;
-            border: none;
-            font-weight: bold;
-            padding: 12px 30px;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-            border: none;
-            font-weight: bold;
-            padding: 12px 30px;
+        .btn-success:hover {
+            background-color: #218838;
+            transform: scale(1.05);
         }
 
         #upload-progress-container {
@@ -88,127 +90,308 @@
             transition: width 0.5s ease-in-out;
         }
 
+        
         #upload-status {
             font-size: 1.2rem;
             color: #333;
         }
-
+    
         #file-name {
             font-size: 1rem;
             color: #333;
         }
-
+    
         #error-message {
             margin-top: 20px;
             font-size: 1rem;
             display: none;
         }
-
+    
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    
+        .steps-section {
+            margin-top: 60px;
+            text-align: center;
+        }
+    
+        .steps-section h2 {
+            font-size: 2rem;
+            color: #007bff;
+            font-weight: bold;
+        }
+    
+        .steps-section .row {
+            display: flex;
+            justify-content: center;
+        }
+    
+        .steps-section .step-card {
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin: 20px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: box-shadow 0.3s ease-in-out;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+    
+        .steps-section .step-card:hover {
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+        }
+    
+        .steps-section .step-card h5 {
+            color: #007bff;
+            font-size: 1.2rem;
+        }
+    
+        .steps-section .step-card p {
+            font-size: 1rem;
+            color: #555;
+        }
+    
+        /* Custom Styling for FAQ Accordion */
+        .faq-section {
+            margin-top: 60px;
+          
+            padding: 30px;
+            background-color: #f9f9f9;
+            {% comment %} border: 2px solid #007bff; /* Border around FAQ */ {% endcomment %}
+            {% comment %} border-radius: 10px; {% endcomment %}
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            {% comment %} width: 50%; /* Set the width to 50% */ {% endcomment %}
+            margin-left: auto; /* Center the FAQ section */
+            margin-right: auto; /* Center the FAQ section */
+        }
+    
+        .faq-section .accordion-button {
+            font-weight: bold;
+            color: #007bff;
+        }
+    
+        .faq-section .accordion-body {
+            font-size: 1rem;
+            color: #555;
+        }
+    
+        .faq-section .accordion-header {
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #ddd;
+        }
+    
+        .faq-section .accordion-item {
+            border-bottom: 1px solid #ddd;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="hero-section">
             <h1 class="hero-title">Amatip Digital Box: <span class="highlight">AI Video Clipper</span></h1>
-            <p class="hero-subtext">In just one click, generate viral clips from your videos using AI, completely free - no catch.</p>
-            <p>Want to <b>clip</b> your own videos and get viral-ready content? Upload your video or paste the link below.</p>
+            <p class="hero-subtext">In just one click, generate viral clips from your videos using AI.</p>
+            <p>Upload your video or paste the link below.</p>
 
-            <!-- Video Link Input and Upload Options -->
-            <div class="video-container" id="video-container">
-                <div class="input-group mb-3" id="video-link-container">
-                    <input type="text" id="video-link" class="form-control" placeholder="Drop a video link (e.g., from YouTube, Vimeo, etc.)">
-                    <button class="btn btn-summarize" type="button" onclick="generateClip()">Get clips in 1 click</button>
+            <div class="video-container">
+                <!-- Video Link Input -->
+                <div class="input-group mb-3">
+                    <input type="text" id="video-link" class="form-control" placeholder="Paste a video link (YouTube, Vimeo, etc.)">
+                    <button class="btn btn-summarize" type="button" onclick="processVideoLink()">Process</button>
                 </div>
-                <div class="text-center" id="upload-file-container">
-                    <p class="mb-2">Or</p>
-                    <input type="file" id="video-upload" class="form-control-file" onchange="chooseFile()" />
-                    <button class="btn btn-success mt-2" type="button" onclick="uploadVideo()">Upload Video</button>
-                </div>
-                <!-- Upload Progress and Cancel Button -->
-                <div id="upload-progress-container" class="d-none">
-                    <p id="file-name">Selected File: </p>
+
+                <!-- File Upload Form -->
+                <form id="upload-form" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="text-center">
+                        <p class="mb-2">Or</p>
+                        <input type="file" id="video-upload" name="video" class="form-control-file" />
+                        <button class="btn btn-success mt-2" type="submit">Upload Video</button>
+                    </div>
+                </form>
+
+                <!-- Upload Progress -->
+                <div id="upload-progress-container">
+                    <p id="file-name"></p>
                     <div class="progress-bar-container">
                         <div class="progress-bar" id="progress-bar"></div>
                     </div>
-                    <p id="upload-status">Uploading 0% - 30 min left</p>
-                    <button class="btn btn-danger mt-2" id="cancel-upload" onclick="cancelUpload()">Cancel</button>
+                    <p id="upload-status">Uploading 0%</p>
                 </div>
+
                 <!-- Error message -->
-                <div id="error-message" class="text-danger d-none">Please provide a valid video link or upload a video file to proceed.</div>
+                <div id="error-message" class="text-danger d-none">Please provide a valid video link or upload a file.</div>
+            </div>
+        </div>
+    </div>
 
-                <!-- Processing Progress -->
-                <div id="processing-container" class="d-none">
-                    <p>Processing your video...</p>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" id="clip-progress-bar"></div>
-                    </div>
-                    <p id="processing-status">Processing 0% - 30 min left</p>
+    <div class="steps-section">
+        <h2 class="fw-bold text-center">How to clip a video?</h2>
+        <p class="text-center">Follow these three simple steps to quickly clip your video using AI.</p>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="step-card p-3" style="animation: fadeIn 1.5s ease-in-out;">
+                    <h5><b>1. Enter Video URL</b></h5>
+                    <p>Copy and paste the video URL into Amatip's clipper, or choose to upload a video from your device.</p>
                 </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card p-3" style="animation: fadeIn 1.5s ease-in-out 0.5s;">
+                    <h5><b>2. Select Clip Section</b></h5>
+                    <p>Choose the section of the video you want to clip or set the start and end times.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card p-3" style="animation: fadeIn 1.5s ease-in-out 1s;">
+                    <h5><b>3. Click Clip</b></h5>
+                    <p>Hit the "Clip" button and let AI process the selected section of your video, extracting the best moments automatically.</p>
+                </div>
+            </div>
+        </div>
 
-                <!-- Clipped Video Result -->
-                <div id="clip-result" class="d-none">
-                    <h4>Clipped Video is Ready!</h4>
-                    <div class="card">
-                        <img id="thumbnail" class="card-img-top" src="" alt="Clipped Video Thumbnail">
-                        <div class="card-body">
-                            <p id="clip-description" class="text-muted">The best part of your video has been clipped!</p>
-                            <a id="clip-link" class="btn btn-primary" href="" target="_blank">Watch the Clip</a>
+        <div class="faq-section mt-5">
+            <h2 class="fw-bold text-center">Frequently Asked Questions</h2>
+            <div class="accordion mt-4" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            What is the purpose of the AI-powered Video Clipper?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Amatip Digital Box offers an AI-powered video clipping tool that automatically selects the best parts of videos based on your preferences.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            How does the video clipping process work?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Simply upload or paste a video URL, click the "Clip Video" button, and let AI process the video to clip out the best moments for you.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            Do I need an account to use the service?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            No, you do not need to sign up. Just paste the video link or upload a video, and you'll get a clipped video in no time!
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                            Is this service completely free to use?
+                        </button>
+                    </h2>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Yes, the video clipping service is entirely free! No hidden charges or subscriptions.
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Steps Section -->
-    <div class="steps-section">
-        <h2 class="fw-bold text-center">How to clip a video?</h2>
-        <div class="row mt-4">
-            <div class="col-md-4">
-                <div class="step-card p-3">
-                    <h5><b>1. Enter Video URL</b></h5>
-                    <p>Copy and paste the video URL into Amatip's clipper, or choose to upload a video from your device.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="step-card p-3">
-                    <h5><b>2. Select Clip Section</b></h5>
-                    <p>Choose the section of the video you want to clip or set the start and end times.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="step-card p-3">
-                    <h5><b>3. Click Clip</b></h5>
-                    <p>Hit the "Clip" button and let AI process the selected section of your video, extracting the best moments automatically.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- FAQ Section -->
-    <div class="faq-section mt-5">
-        <h2 class="fw-bold text-center">Frequently Asked Questions</h2>
-        <div class="accordion mt-4" id="faqAccordion">
-            <!-- Accordion items go here, same as in your code -->
-        </div>
-    </div>
-
+    
     <!-- Tutorial Section -->
-    <div class="tutorial-section text-center">
-        <h2 class="fw-bold" style="color: #007bff;">How the Video Clipping Works</h2>
-        <p class="lead" style="color: #666;">Watch the tutorial video and follow the steps to clip your videos with ease using AI.</p>
-        <div class="video-container mb-4">
-            <video controls>
-                <source src="{% static 'video/tutorial-video.mp4' %}" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        </div>
-        <div class="row">
-            <div class="col-md-4">
-                <img src="{% static 'img/t1.png' %}" class="img-fluid" alt="Step 1">
+<div class="tutorial-section text-center" style="padding: 50px 20px; background-color: #f9f9f9;">
+    <h2 class="fw-bold" style="color: #007bff;">How the Video Clipping Works</h2>
+    <p class="lead" style="color: #666;">Watch the tutorial video and follow the steps to clip your videos with ease using AI.</p>
+    
+    <!-- Demo Video -->
+    <div class="video-container mb-4" style="max-width: 800px; margin: 0 auto;">
+        <video controls>
+            <source src="video/tutorial-video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    
+    <!-- Step-by-step Image Demonstration -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="step-image">
+                <img src="{% static 'img/t1.png' %}"  class="img-fluid" width="1000px" style="border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
                 <p><strong>Step 1:</strong> Upload your video or paste the URL.</p>
             </div>
-            <div class="col-md-4">
-                <img src="{% static 'img/t2.jpg' %}" class="img-fluid" alt="Step 2">
+        </div>
+        <div class="col-md-4">
+            <div class="step-image">
+                <img src="{% static 'img/t2.jpg' %}" alt="Step 2: Select Clip" class="img-fluid" width="540px" style="border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
                 <p><strong>Step 2:</strong> Select the section of the video to clip.</p>
-           
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="step-image">
+                <img src="{% static 'img/t3.png' %}" alt="Step 3: Clip Video" class="img-fluid" width="500px" style="border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+                <p><strong>Step 3:</strong> Click 'Clip' and let the AI work!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <script>
+        function processVideoLink() {
+            const videoLink = document.getElementById('video-link').value.trim();
+
+            if (!videoLink) {
+                document.getElementById('error-message').classList.remove('d-none');
+                return;
+            }
+
+            window.location.href = `/process/?url=${encodeURIComponent(videoLink)}`;
+        }
+
+        document.getElementById("upload-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const videoFile = document.getElementById('video-upload').files[0];
+            if (!videoFile) {
+                document.getElementById('error-message').classList.remove('d-none');
+                return;
+            }
+
+            document.getElementById('error-message').classList.add('d-none');
+            document.getElementById('upload-progress-container').style.display = 'block';
+            document.getElementById('file-name').innerText = `Uploading: ${videoFile.name}`;
+
+            const formData = new FormData();
+            formData.append("video", videoFile);
+
+            fetch("/upload/", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.video_id) {
+                    window.location.href = `/process/?video_id=${data.video_id}`;
+                } else {
+                    alert("Upload failed: " + (data.error || "Unknown error"));
+                }
+            })
+            .catch(error => console.error("Upload error:", error));
+        });
+    </script>
+    
+</body>
+</html>

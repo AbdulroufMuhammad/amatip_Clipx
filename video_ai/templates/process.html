@@ -1,0 +1,293 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Clip Processing</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 30px;
+            background-image: url('{% static "img/gn.jpg" %}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .btn-primary, .btn-success {
+            font-weight: bold;
+            padding: 12px 20px;
+            border-radius: 5px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        #clip-progress-container {
+            display: none;
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 30px;
+            background-color: #ddd;
+            border-radius: 5px;
+            margin: 10px auto;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background-color: #28a745;
+            border-radius: 5px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .video-preview-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+            margin-bottom: 40px;
+        }
+
+        .video-preview-container video {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .ai-clipping-section {
+            margin-top: 40px;
+            padding: 30px;
+            background-color: #f1f1f1;
+            border-radius: 15px;
+            box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.1);
+        }
+
+        .ai-clipping-section h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .ai-clipping-section .form-select,
+        .ai-clipping-section .form-control {
+            border-radius: 8px;
+        }
+
+        .ad-container {
+            text-align: center;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .ad-container h4 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .ad-container img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 10px;
+        }
+
+        .row .col-md-4 {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Processing Your Video...</h2>
+
+    <!-- Video Preview Section -->
+    <div class="video-preview-container">
+        <video id="video-player" controls>
+            <source id="video-source" src="" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <!-- Clipping Progress Section -->
+    <div id="clip-progress-container">
+        <p id="clip-file-name">Processing Video...</p>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <p id="time-left"></p>
+    </div>
+
+    <!-- Clipping Result Section -->
+    <div id="clip-result" style="display: none;">
+        <h4>Clipped Video is Ready!</h4>
+        <div class="card">
+            <img id="thumbnail" class="card-img-top" src="" alt="Clipped Video Thumbnail">
+            <div class="card-body">
+                <p id="clip-description" class="text-muted">The best part of your video has been clipped!</p>
+                <a id="clip-link" class="btn btn-primary" href="" target="_blank">Watch the Clip</a>
+                <a id="save-clip" class="btn btn-success" href="" download>Save Video</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Clipping Section -->
+    <div class="ai-clipping-section">
+        <h3>AI Clipping Settings</h3>
+            <!-- Genre Dropdown -->
+            <div class="mb-3">
+                <label for="genre" class="form-label">Genre</label>
+                <select id="genre" class="form-select">
+                    <option value="auto">Auto</option>
+                    <option value="action">Action</option>
+                    <option value="comedy">Comedy</option>
+                    <option value="drama">Drama</option>
+                    <option value="documentary">Documentary</option>
+                </select>
+            </div>
+    
+            <!-- Clip Length Dropdown -->
+            <div class="mb-3">
+                <label for="clip-length" class="form-label">Clip Length</label>
+                <select id="clip-length" class="form-select">
+                    <option value="auto">Auto (0m-3m)</option>
+                    <option value="short">Short (0m-1m)</option>
+                    <option value="medium">Medium (1m-3m)</option>
+                    <option value="long">Long (3m+)</option>
+                </select>
+            </div>
+    
+            <!-- Topic Filter -->
+            <div class="mb-3">
+                <label for="topic-filter" class="form-label">Topic filter by keywords</label>
+                <input type="text" class="form-control" id="topic-filter" placeholder="Add keywords, comma-separated">
+            </div>
+    
+            <!-- Processing Timeframe -->
+            <div class="processing-timeframe">
+                <label for="processing-timeframe" class="form-label">Processing Timeframe</label>
+                <select id="processing-timeframe" class="form-select">
+                    <option value="credit-saver">Credit saver</option>
+                    <option value="fast">Fast</option>
+                    <option value="normal">Normal</option>
+                </select>
+            </div>
+    
+            <!-- Slider for Video Timeline -->
+            <div class="mt-4">
+                <label for="video-timeline" class="form-label">Processing Timeframe</label>
+                <input type="range" class="form-range" id="video-timeline" min="0" max="100" step="1" value="50">
+                <p>Time: <span id="time-display">0:00</span></p>
+            </div>
+
+             <button class="btn btn-primary" onclick="startClipping()">Start Clipping</button>
+        </div>
+    
+        <!-- Ad Section -->
+        <div class="ad-container">
+            <h4>New Features Coming Soon!</h4>
+            <p>Stay tuned for more amazing features. Don't miss out!</p>
+            <img src="{% static 'img/ad-image.jpg' %}"   alt="Ad Image">
+        </div>
+    </div>
+    
+</div>
+
+<script>
+    let progressBar = document.getElementById('progress-bar');
+    let timeLeft = document.getElementById('time-left');
+    let clipResult = document.getElementById('clip-result');
+    let clipProgressContainer = document.getElementById('clip-progress-container');
+    let videoPlayer = document.getElementById("video-player");
+    let videoSource = document.getElementById("video-source");
+
+    let videoId = new URLSearchParams(window.location.search).get("video_id");
+    let videoUrl = new URLSearchParams(window.location.search).get("url");
+
+    function loadVideo() {
+        if (videoUrl) {
+            document.getElementById("video-source").src = videoUrl;
+        } else if (videoId) {
+            document.getElementById("video-source").src = `/media/uploads/${videoId}.mp4`;
+        } else {
+            alert("No video found.");
+            window.location.href = "/";
+        }
+        document.getElementById("video-player").load();
+    }
+
+    function startClipping() {
+        clipProgressContainer.style.display = 'block';
+        let progress = 0;
+        let timeRemaining = 30;
+        let interval = setInterval(() => {
+            if (progress < 100) {
+                progress += 5;
+                progressBar.style.width = progress + '%';
+                timeLeft.innerText = `Processing: ${timeRemaining--}s remaining`;
+            } else {
+                clearInterval(interval);
+                fetchClip();
+            }
+        }, 1000);
+    }
+
+    function fetchClip() {
+        if (!videoId) {
+            alert("No video ID found for processing.");
+            return;
+        }
+
+        fetch(`/clips/${videoId}/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.clip_url) {
+                clipProgressContainer.style.display = 'none';
+                clipResult.style.display = 'block';
+                document.getElementById("clip-link").href = data.clip_url;
+                document.getElementById("save-clip").href = data.clip_url;
+                document.getElementById("thumbnail").src = data.thumbnail || "{% static 'img/default-thumbnail.jpg' %}";
+            } else {
+                alert("Error processing video.");
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching clip:", error);
+            alert("An error occurred while fetching the processed clip.");
+        });
+    }
+
+    window.onload = loadVideo;
+</script>
+
+</body>
+</html>

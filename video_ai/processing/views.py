@@ -9,7 +9,7 @@ from django.views.decorators.http import require_http_methods
 from pymongo import MongoClient
 from .tasks import process_video  # ✅ Ensure correct import path
 
-# MongoDB Setup
+# ✅ MongoDB Connection
 client = MongoClient(settings.MONGO_URI)
 db = client['video_ai']
 videos_collection = db['videos']
@@ -19,7 +19,7 @@ logs_collection = db['logs']
 @require_http_methods(["POST"])
 def submit_video(request):
     """
-    Handles video submission via URL.
+    Handles video submission via URL or upload.
     - Accepts POST request with 'url', 'clip_length', and 'clip_ranges'.
     - Starts video processing in a separate thread.
     """
@@ -56,7 +56,7 @@ def submit_video(request):
 
         # ✅ Fetch total duration before processing for frontend range limit
         total_duration = None  # Default None (will be fetched later)
-        processing_thread = threading.Thread(target=process_video, args=(video_id, clip_length, clip_ranges))
+        processing_thread = threading.Thread(target=process_video, args=(video_id, video_url, clip_length, clip_ranges))
         processing_thread.start()
 
         video_data = {
