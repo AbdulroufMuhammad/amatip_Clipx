@@ -1,15 +1,14 @@
+from datetime import datetime
 from mongoengine import Document, fields
 import uuid
-from django.db import models
 
+class Video(Document):
+    video_id = fields.UUIDField(default=uuid.uuid4, unique=True)
+    url = fields.URLField()
+    status = fields.StringField(max_length=50, default="pending")
+    created_at = fields.DateTimeField(default=datetime.utcnow)
 
-class Video(models.Model):
-    video_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    url = models.URLField()
-    status = models.CharField(max_length=50, default="pending")
-    created_at = models.DateTimeField(auto_now_add=True)
-
-class VideoLog(models.Model):
-    video_id = models.UUIDField()
-    message = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
+class VideoLog(Document):
+    video_id = fields.UUIDField()
+    message = fields.StringField()
+    timestamp = fields.DateTimeField(default=datetime.utcnow)

@@ -1,9 +1,25 @@
+# Virtual environment
 venv/
+env/
+
+# Compiled Python files
 __pycache__/
 *.pyc
 *.pyo
+
+# Database files
 *.db
 *.sqlite3
-env/
+
+# Environment variables
 .env
+
+# Log files
 *.log
+
+# Video files (Downloaded from YouTube or processed)
+media/downloads/
+media/clips/
+video_ai/media/downloads/
+video_ai/media/clips/
+video_ai/media/uploads/
