@@ -93,9 +93,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (!response.ok) throw new Error("Failed to fetch clips.");
 
                 const data = await response.json();
-                clipList.innerHTML = data.clips.length > 0
-                    ? data.clips.map(clip => {
-                        const videoFileName = `${videoId}_clip_${clip.start_time}_${clip.end_time}.mp4`; // ✅ Use video ID + start & end time
+
+                // ✅ Filter out any .wav files (only show .mp4 clips)
+                const validClips = data.clips.filter(clip => clip.filename.endsWith(".mp4"));
+
+                clipList.innerHTML = validClips.length > 0
+                    ? validClips.map(clip => {
+                        const videoFileName = clip.filename;  // ✅ Use full filename from backend response
+                        const transcriptText = clip.transcript || "Transcript not available";  // ✅ Ensure transcript is not empty
 
                         return `
                             <li>
@@ -108,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 <a href="/media/clips/${videoFileName}" download>
                                     <button>Download Clip</button>
                                 </a>
-                                <p><strong>Transcript:</strong> ${clip.transcript}</p>
+                                <p><strong>Transcript:</strong> ${transcriptText}</p>  <!-- ✅ Display correct text transcript -->
                             </li>
                         `;
                     }).join("")
@@ -129,7 +134,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (!response.ok) throw new Error("Failed to fetch transcription.");
 
                 const data = await response.json();
-                fullTranscription.textContent = data.full_transcription || "No transcription available.";
+
+                // ✅ Ensure full transcription is displayed correctly
+                fullTranscription.innerHTML = `<p><strong>Full Transcription:</strong></p><p>${data.full_transcription || "No transcription available."}</p>`;
             } catch (error) {
                 fullTranscription.innerHTML = `<p>Error fetching transcription: ${error.message}</p>`;
             }
@@ -139,10 +146,3 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchFullTranscription();
     }
 });
-    
-    // The  scripts.js  file contains all the JavaScript code that interacts with the server-side Django views. It handles form submissions, fetches logs in real-time, displays clips and transcriptions, and more. 
-    // The JavaScript code is written in vanilla JavaScript and uses the  fetch()  API to make asynchronous requests to the Django server. 
-    // Step 8: Create the Django URLs 
-    // Next, we need to define the URLs for the Django views we created earlier. 
-    // Open the  video_ai/urls.py  file and update it as follows: 
-    // # video_ai/urls.py
